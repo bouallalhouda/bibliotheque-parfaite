@@ -1,4 +1,4 @@
-package com.
+package com.bibliotheque.service;
 
 import dao.LivreDAO;
 import dao.impl.LivreDAOImpl;
