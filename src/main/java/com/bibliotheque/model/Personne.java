@@ -1,5 +1,4 @@
 package com.bibliotheque.model;
-package model;
 
 public abstract class Personne {
     protected String nom;

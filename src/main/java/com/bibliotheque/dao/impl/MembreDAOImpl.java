@@ -1,19 +1,24 @@
-package dao.impl;
+package com.bibliotheque.dao.impl;
 
-import dao.MembreDAO;
-import model.Membre;
-import util.DatabaseConnection;
+import com.bibliotheque.dao.MembreDAO;
+import com.bibliotheque.model.Membre;
+import com.bibliotheque.util.DatabaseConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MembreDAOImpl implements MembreDAO {
 
     private Connection connection;
 
     public MembreDAOImpl() {
-        this.connection = DatabaseConnection.getInstance().getConnection();
+        try {
+            this.connection = DatabaseConnection.getInstance().getConnection();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -32,25 +37,26 @@ public class MembreDAOImpl implements MembreDAO {
     }
 
     @Override
-    public Membre findById(int id) {
+    public Optional<Membre> findById(int id) {
         String sql = "SELECT * FROM membres WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return new Membre(
+                Membre m = new Membre(
                         rs.getInt("id"),
                         rs.getString("nom"),
                         rs.getString("prenom"),
                         rs.getString("email"),
                         rs.getBoolean("actif")
                 );
+                return Optional.of(m);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override

@@ -1,13 +1,13 @@
-package controller;
+package com.bibliotheque.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import service.BibliothequeService;
-import model.Livre;
-import java.sql.SQLException;
+import com.bibliotheque.service.BibliothequeService;
+import com.bibliotheque.model.Livre;
+
 
 public class LivreController {
     @FXML private TableView<Livre> tableLivres;
@@ -23,32 +23,24 @@ public class LivreController {
 
     @FXML
     public void initialize() {
-        try {
-            // Initialise le service
-            service = new BibliothequeService();
-            
-            // Configure les colonnes
-            colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
-            colAuteur.setCellValueFactory(new PropertyValueFactory<>("auteur"));
-            colISBN.setCellValueFactory(new PropertyValueFactory<>("isbn"));
-            
-            // Charge les données
-            chargerLivres();
-            
-        } catch (SQLException e) {
-            showError("Erreur BD", e.getMessage());
-        }
+        // Initialise le service
+        service = new BibliothequeService();
+        // Configure les colonnes
+        colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
+        colAuteur.setCellValueFactory(new PropertyValueFactory<>("auteur"));
+        colISBN.setCellValueFactory(new PropertyValueFactory<>("isbn"));
+        // Charge les données
+        chargerLivres();
     }
 
+    public void setMainController(MainController main) {
+        // liaison minimale pour FXML
+    }
     private void chargerLivres() {
-        try {
-            ObservableList<Livre> livres = FXCollections.observableArrayList(
-                service.getTousLesLivres()
-            );
-            tableLivres.setItems(livres);
-        } catch (SQLException e) {
-            showError("Erreur", "Impossible de charger les livres : " + e.getMessage());
-        }
+        ObservableList<Livre> livres = FXCollections.observableArrayList(
+            service.getTousLesLivres()
+        );
+        tableLivres.setItems(livres);
     }
 
     @FXML
@@ -74,8 +66,6 @@ public class LivreController {
             
         } catch (IllegalArgumentException e) {
             showError("Erreur validation", e.getMessage());
-        } catch (SQLException e) {
-            showError("Erreur BD", e.getMessage());
         }
     }
     

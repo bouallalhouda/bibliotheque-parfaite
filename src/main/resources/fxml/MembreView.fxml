@@ -1,1 +1,26 @@
-"<!-- Interface membres -->" 
+<!-- Interface membres -->
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="10" alignment="CENTER" xmlns:fx="http://javafx.com/fxml" fx:controller="com.bibliotheque.controller.MembreController" prefWidth="600" prefHeight="400">
+    <TableView fx:id="tableMembres" prefHeight="250">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50" />
+            <TableColumn fx:id="colNom" text="Nom" prefWidth="150" />
+            <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="150" />
+            <TableColumn fx:id="colEmail" text="Email" prefWidth="200" />
+            <TableColumn fx:id="colActif" text="Actif" prefWidth="70" />
+        </columns>
+    </TableView>
+
+    <HBox spacing="10" alignment="CENTER">
+        <TextField fx:id="nomField" promptText="Nom" />
+        <TextField fx:id="prenomField" promptText="Prénom" />
+        <TextField fx:id="emailField" promptText="Email" />
+        <Button fx:id="ajouterButton" text="Ajouter" onAction="#ajouterMembre" />
+        <Button fx:id="editButton" text="Éditer" onAction="#editerSelection" />
+        <Button fx:id="deleteButton" text="Supprimer" onAction="#supprimerSelection" />
+    </HBox>
+</VBox>

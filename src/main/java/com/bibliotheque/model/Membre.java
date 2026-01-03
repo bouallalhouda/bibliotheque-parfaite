@@ -1,9 +1,13 @@
 package com.bibliotheque.model;
-package model;
 
 public class Membre extends Personne {
     private int id;
     private boolean actif;
+    public Membre() {
+        super("", "", "");
+        this.id = 0;
+        this.actif = true;
+    }
 
     public Membre(int id, String nom, String prenom, String email, boolean actif) {
         super(nom, prenom, email); // appel du parent
@@ -12,6 +16,8 @@ public class Membre extends Personne {
     }
 
     public int getId() { return id; }
+
+    public void setId(int id) { this.id = id; }
 
     public boolean isActif() { return actif; }
 
