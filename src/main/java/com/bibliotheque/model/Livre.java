@@ -24,9 +24,6 @@ public class Livre extends Document {
     public boolean isDisponible() { return disponible; }
     public void setDisponible(boolean disponible) { this.disponible = disponible; }
 
-    @Override
-    public double calculerPenaliteRetard() {
-        return 0.0; // Placeholder simple implementation
-    }
+    
 }
 
