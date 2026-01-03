@@ -1,4 +1,4 @@
-package model;
+package com.bibliotheque.model;
 
 /**
  * Enumération des différents états possibles d'un livre.
