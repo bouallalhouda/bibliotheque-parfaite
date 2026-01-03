@@ -1,1 +1,1 @@
-"package com.bibliotheque.model;" 
+package com.bibliotheque.model;

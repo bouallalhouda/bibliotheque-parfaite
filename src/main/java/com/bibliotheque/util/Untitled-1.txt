@@ -1,0 +1,8 @@
+<rdf:Property rdf:about="ex:travailleDans">
+  <rdfs:domain rdf:resource="ex:Personnel"/>
+  <rdfs:range rdf:resource="ex:Bureau"/>
+</rdf:Property>
+<rdf:Property rdf:about="ex:enseigne_a">
+  <rdfs:domain rdf:resource="ex:EnseignantCours"/>
+  <rdfs:range rdf:resource="ex:cours"/>
+</rdf:Property>
