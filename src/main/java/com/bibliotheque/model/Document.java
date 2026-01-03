@@ -174,4 +174,11 @@ public abstract class Document {
                (auteur != null && auteur.toLowerCase().contains(recherche)) ||
                (categorie != null && categorie.toLowerCase().contains(recherche));
     }
+
+    public double calculerPenaliteRetard() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'calculerPenaliteRetard'");
+    }
+
+    
 }
