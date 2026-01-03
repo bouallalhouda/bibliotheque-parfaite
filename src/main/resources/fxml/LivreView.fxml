@@ -1,1 +1,90 @@
 "<!-- Interface livres -->" 
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx" 
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controller.LivreController"
+      spacing="10"
+      style="-fx-padding: 15; -fx-background-color: #f5f5f5;">
+
+    <!-- Titre -->
+    <Label text="📚 Gestion des Livres" 
+           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+    <!-- Barre d'outils -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <!-- Recherche -->
+        <TextField fx:id="txtRecherche" 
+                   promptText="Rechercher par titre, auteur, ISBN..."
+                   HBox.hgrow="ALWAYS"
+                   style="-fx-pref-width: 300px;"/>
+        
+        <Button fx:id="btnRechercher" text="🔍 Rechercher" 
+                onAction="#rechercherLivres"
+                style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+        
+        <Button fx:id="btnRechercheAvancee" text="⚙️ Avancée" 
+                onAction="#ouvrirRechercheAvancee"/>
+        
+        <Region HBox.hgrow="ALWAYS"/>
+        
+        <!-- Boutons d'actions -->
+        <Button fx:id="btnAjouter" text="➕ Ajouter" 
+                onAction="#ajouterLivre"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+        
+        <Button fx:id="btnModifier" text="✏️ Modifier" 
+                onAction="#modifierLivre" disable="true"
+                style="-fx-background-color: #f39c12; -fx-text-fill: white;"/>
+        
+        <Button fx:id="btnSupprimer" text="🗑️ Supprimer" 
+                onAction="#supprimerLivre" disable="true"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
+        
+        <Button fx:id="btnRafraichir" text="🔄 Rafraîchir" 
+                onAction="#rafraichir"/>
+    </HBox>
+
+    <!-- Statistiques -->
+    <HBox spacing="20">
+        <Label fx:id="lblStatistiques" 
+               style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #7f8c8d;"/>
+    </HBox>
+
+    <!-- Tableau des livres -->
+    <TableView fx:id="tableViewLivres" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colId" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="colTitre" text="Titre" prefWidth="250"/>
+            <TableColumn fx:id="colAuteur" text="Auteur" prefWidth="150"/>
+            <TableColumn fx:id="colIsbn" text="ISBN" prefWidth="120"/>
+            <TableColumn fx:id="colAnnee" text="Année" prefWidth="70"/>
+            <TableColumn fx:id="colCategorie" text="Catégorie" prefWidth="120"/>
+            <TableColumn fx:id="colQuantiteTotal" text="Quantité Totale" prefWidth="100"/>
+            <TableColumn fx:id="colQuantiteDispo" text="Disponible" prefWidth="80"/>
+            <TableColumn fx:id="colEtat" text="État" prefWidth="100"/>
+        </columns>
+        
+        <!-- Style alterné des lignes -->
+        <rowFactory>
+            <TableViewRowFactory>
+                <row>
+                    <TableRow styleClass="table-row-cell" />
+                </row>
+            </TableViewRowFactory>
+        </rowFactory>
+    </TableView>
+
+    <!-- Pied de page -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Label text="Double-clic sur une ligne pour modifier"/>
+    </HBox>
+
+    <!-- Style CSS -->
+    <stylesheets>
+        <URL value="@styles/livre.css"/>
+    </stylesheets>
+</VBox>
