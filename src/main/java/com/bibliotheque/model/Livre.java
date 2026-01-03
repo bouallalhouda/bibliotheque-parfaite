@@ -23,7 +23,3 @@ public class Livre extends Document {
 
     public boolean isDisponible() { return disponible; }
     public void setDisponible(boolean disponible) { this.disponible = disponible; }
-
-    
-}
-
