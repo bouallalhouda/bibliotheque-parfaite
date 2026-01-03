@@ -11,7 +11,7 @@ public interface MembreDAO extends DAO<Membre> {
     void save(Membre membre);
     List<Membre> findAll();
     void update(Membre membre);
-    void delete(int id);
+    boolean delete(int id);
 
     Membre findByEmail(String email);
     List<Membre> findActifs();

@@ -1,8 +1,8 @@
 package com.bibliotheque.service;
 
-import dao.LivreDAO;
-import dao.impl.LivreDAOImpl;
-import model.Livre;
+import com.bibliotheque.dao.LivreDAO;
+import com.bibliotheque.dao.impl.LivreDAOImpl;
+import com.bibliotheque.model.Livre;
 import java.util.List;
 
 /**

@@ -11,8 +11,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.Livre;
-import service.LivreService;
+import com.bibliotheque.model.Livre;
+import com.bibliotheque.service.LivreService;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -21,6 +21,7 @@ public class LivreController {
     
     // === SERVICES ===
     private LivreService livreService;
+    private MainController mainController;
     
     // === LISTE OBSERVABLE ===
     private ObservableList<Livre> livresList;
@@ -295,5 +296,9 @@ public class LivreController {
     // Pour le rafraîchissement après ajout/modification
     public void refreshTableView() {
         chargerLivres();
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 }

@@ -2,6 +2,7 @@ package com.bibliotheque.dao;
 
 
 
+import com.bibliotheque.model.Livre;
 import java.util.List;
 
 /**

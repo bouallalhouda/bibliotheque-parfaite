@@ -11,7 +11,7 @@ public interface EmpruntDAO extends DAO<Emprunt> {
     void save(Emprunt emprunt);
     List<Emprunt> findAll();
     void update(Emprunt emprunt);
-    void delete(int id);
+    boolean delete(int id);
 
     List<Emprunt> findByLivreIsbn(String isbn);
     List<Emprunt> findByMembre(int membreId);

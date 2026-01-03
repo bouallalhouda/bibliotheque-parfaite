@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+//it works
+
 public class EmpruntDAOImpl implements EmpruntDAO {
 
     private Connection connection;
@@ -140,7 +142,8 @@ public class EmpruntDAOImpl implements EmpruntDAO {
         e.setDateRetourEffective(rs.getDate("date_retour_reelle"));
 
         String isbn = rs.getString("livre_isbn");
-        Livre livre = livreDAO.findByIsbn(isbn);
+        List<Livre> livres = livreDAO.findByIsbn(isbn);
+        Livre livre = livres.isEmpty() ? null : livres.get(0);
         e.setLivre(livre);
 
         int membreId = rs.getInt("membre_id");
@@ -148,5 +151,18 @@ public class EmpruntDAOImpl implements EmpruntDAO {
         e.setMembre(membre);
 
         return e;
+    }
+
+    @Override
+    public boolean delete(int id) {
+        String sql = "DELETE FROM emprunts WHERE id=?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

@@ -37,8 +37,12 @@ public class EmpruntService {
      */
     public void emprunterLivre(String isbn, int membreId) throws LivreIndisponibleException, MembreInactifException, LimiteEmpruntDepasseeException {
         // Vérifier si le livre existe et est disponible
-        Livre livre = livreDAO.findByIsbn(isbn);
-        if (livre == null || !livre.isDisponible()) {
+        List<Livre> livres = livreDAO.findByIsbn(isbn);
+        if (livres.isEmpty()) {
+            throw new LivreIndisponibleException("Le livre n'existe pas.");
+        }
+        Livre livre = livres.get(0);
+        if (!livre.isDisponible()) {
             throw new LivreIndisponibleException("Le livre n'est pas disponible.");
         }
 
