@@ -1,8 +1,8 @@
-package dao.impl;
+package com.bibliotheque.dao.impl;
 
-import dao.MembreDAO;
-import model.Membre;
-import util.DatabaseConnection;
+import com.bibliotheque.dao.MembreDAO;
+import com.bibliotheque.model.Membre;
+import com.bibliotheque.util.DatabaseConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -149,3 +149,5 @@ public class MembreDAOImpl implements MembreDAO {
         return membres;
     }
 }
+
+
