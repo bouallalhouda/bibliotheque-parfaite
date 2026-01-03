@@ -1,16 +1,16 @@
 package com.bibliotheque.model;
 
 
-
 import java.time.LocalDate;
 
 /**
  * Classe abstraite représentant un document dans la bibliothèque.
  * C'est la classe parente de tous les types de documents (Livre, Revue, DVD, etc.).
+ * Implémente l'interface Empruntable.
  */
-public abstract class Document {
+public abstract class Document implements Empruntable {
     
-    // Attributs communs à tous les documents
+    // === ATTRIBUTS COMMUNS À TOUS LES DOCUMENTS ===
     private int id;
     private String titre;
     private String auteur;
@@ -18,12 +18,18 @@ public abstract class Document {
     private String categorie;
     private boolean disponible;
     
-    // Constructeur par défaut
+    // === CONSTRUCTEURS ===
+    
+    /**
+     * Constructeur par défaut
+     */
     public Document() {
         this.disponible = true; // Par défaut, un document est disponible
     }
     
-    // Constructeur avec paramètres
+    /**
+     * Constructeur avec paramètres
+     */
     public Document(int id, String titre, String auteur, 
                    LocalDate datePublication, String categorie) {
         this.id = id;
@@ -34,7 +40,53 @@ public abstract class Document {
         this.disponible = true;
     }
     
-    // Getters et Setters
+    // === MÉTHODES ABSTRAITES (À IMPLÉMENTER PAR LES SOUS-CLASSES) ===
+    
+    /**
+     * Retourne le type de document (Livre, Revue, etc.)
+     */
+    public abstract String getTypeDocument();
+    
+    /**
+     * Retourne une description détaillée du document
+     */
+    public abstract String getDescriptionDetaillee();
+    
+    // === IMPLÉMENTATION DE L'INTERFACE EMPRUNTABLE ===
+    
+    @Override
+    public boolean estDisponible() {
+        return this.disponible;
+    }
+    
+    @Override
+    public String getTypeEmpruntable() {
+        return getTypeDocument();
+    }
+    
+    @Override
+    public String getConditionsEmprunt() {
+        return "À retourner avant la date d'échéance.";
+    }
+    
+    @Override
+    public void emprunter() {
+        if (!this.disponible) {
+            throw new IllegalStateException("Le document n'est pas disponible pour l'emprunt");
+        }
+        this.disponible = false;
+    }
+    
+    @Override
+    public void retourner() {
+        this.disponible = true;
+    }
+    
+    @Override
+    public abstract int getDureeMaxEmprunt();
+    
+    // === GETTERS ET SETTERS ===
+    
     public int getId() {
         return id;
     }
@@ -73,8 +125,9 @@ public abstract class Document {
         if (datePublication == null) {
             throw new IllegalArgumentException("La date de publication ne peut pas être nulle");
         }
-        if (datePublication.isAfter(LocalDate.now().plusYears(1))) {
-            throw new IllegalArgumentException("La date de publication ne peut pas être dans le futur lointain");
+        // Vérifier que la date n'est pas trop dans le futur
+        if (datePublication.isAfter(LocalDate.now().plusYears(5))) {
+            throw new IllegalArgumentException("La date de publication ne peut pas être dans plus de 5 ans");
         }
         this.datePublication = datePublication;
     }
@@ -95,23 +148,8 @@ public abstract class Document {
         this.disponible = disponible;
     }
     
-    // Méthodes abstraites que les sous-classes doivent implémenter
-    /**
-     * Retourne le type de document (Livre, Revue, etc.)
-     */
-    public abstract String getTypeDocument();
+    // === MÉTHODES MÉTIER ===
     
-    /**
-     * Retourne une description détaillée du document
-     */
-    public abstract String getDescriptionDetaillee();
-    
-    /**
-     * Calcule la durée maximale d'emprunt pour ce type de document
-     */
-    public abstract int getDureeMaxEmprunt();
-    
-    // Méthodes concrètes communes
     /**
      * Vérifie si le document peut être emprunté
      */
@@ -120,23 +158,26 @@ public abstract class Document {
     }
     
     /**
-     * Marque le document comme emprunté
+     * Vérifie si le document est en retard (à utiliser avec la date d'emprunt)
      */
-    public void emprunter() {
-        if (!this.disponible) {
-            throw new IllegalStateException("Le document n'est pas disponible pour l'emprunt");
-        }
-        this.disponible = false;
+    public boolean estEnRetard(LocalDate dateEmprunt) {
+        LocalDate dateRetourPrevue = dateEmprunt.plusDays(getDureeMaxEmprunt());
+        return LocalDate.now().isAfter(dateRetourPrevue);
     }
     
     /**
-     * Marque le document comme retourné
+     * Calcule le nombre de jours de retard
      */
-    public void retourner() {
-        this.disponible = true;
+    public int calculerJoursRetard(LocalDate dateEmprunt) {
+        LocalDate dateRetourPrevue = dateEmprunt.plusDays(getDureeMaxEmprunt());
+        if (LocalDate.now().isAfter(dateRetourPrevue)) {
+            return (int) java.time.temporal.ChronoUnit.DAYS.between(dateRetourPrevue, LocalDate.now());
+        }
+        return 0;
     }
     
-    // Méthode toString() pour affichage
+    // === MÉTHODES D'AFFICHAGE ===
+    
     @Override
     public String toString() {
         return String.format("%s [ID: %d] - %s par %s (%s) - %s",
@@ -148,7 +189,15 @@ public abstract class Document {
                 disponible ? "✅ Disponible" : "❌ Emprunté");
     }
     
-    // Méthode equals() basée sur l'ID
+    /**
+     * Format court pour les listes
+     */
+    public String toStringCourt() {
+        return String.format("%s - %s", titre, auteur);
+    }
+    
+    // === MÉTHODES DE COMPARAISON ===
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -157,13 +206,37 @@ public abstract class Document {
         return id == document.id;
     }
     
-    // Méthode hashCode() basée sur l'ID
     @Override
     public int hashCode() {
         return Integer.hashCode(id);
     }
     
-    // Méthode pour vérifier si le document correspond à une recherche
+    /**
+     * Compare par titre (pour le tri)
+     */
+    public int compareParTitre(Document autre) {
+        return this.titre.compareToIgnoreCase(autre.titre);
+    }
+    
+    /**
+     * Compare par auteur (pour le tri)
+     */
+    public int compareParAuteur(Document autre) {
+        return this.auteur.compareToIgnoreCase(autre.auteur);
+    }
+    
+    /**
+     * Compare par date (pour le tri)
+     */
+    public int compareParDate(Document autre) {
+        return this.datePublication.compareTo(autre.datePublication);
+    }
+    
+    // === MÉTHODES DE RECHERCHE ===
+    
+    /**
+     * Vérifie si le document correspond à une recherche par mot-clé
+     */
     public boolean correspondRecherche(String motCle) {
         if (motCle == null || motCle.trim().isEmpty()) {
             return true;
@@ -174,11 +247,90 @@ public abstract class Document {
                (auteur != null && auteur.toLowerCase().contains(recherche)) ||
                (categorie != null && categorie.toLowerCase().contains(recherche));
     }
-
-    public double calculerPenaliteRetard() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'calculerPenaliteRetard'");
-    }
-
     
+    /**
+     * Vérifie si le document correspond à une recherche avancée
+     */
+    public boolean correspondRechercheAvancee(String titreRecherche, String auteurRecherche, 
+                                             String categorieRecherche, Integer anneeMin, Integer anneeMax) {
+        boolean correspond = true;
+        
+        if (titreRecherche != null && !titreRecherche.isEmpty()) {
+            correspond = correspond && (titre != null && 
+                         titre.toLowerCase().contains(titreRecherche.toLowerCase()));
+        }
+        
+        if (auteurRecherche != null && !auteurRecherche.isEmpty()) {
+            correspond = correspond && (auteur != null && 
+                         auteur.toLowerCase().contains(auteurRecherche.toLowerCase()));
+        }
+        
+        if (categorieRecherche != null && !categorieRecherche.isEmpty()) {
+            correspond = correspond && (categorie != null && 
+                         categorie.equalsIgnoreCase(categorieRecherche));
+        }
+        
+        if (anneeMin != null) {
+            correspond = correspond && (datePublication.getYear() >= anneeMin);
+        }
+        
+        if (anneeMax != null) {
+            correspond = correspond && (datePublication.getYear() <= anneeMax);
+        }
+        
+        return correspond;
+    }
+    
+    // === MÉTHODES DE VALIDATION ===
+    
+    /**
+     * Valide toutes les données du document
+     */
+    public boolean valider() {
+        try {
+            if (titre == null || titre.trim().isEmpty()) {
+                return false;
+            }
+            
+            if (auteur == null || auteur.trim().isEmpty()) {
+                return false;
+            }
+            
+            if (datePublication == null) {
+                return false;
+            }
+            
+            if (datePublication.isAfter(LocalDate.now().plusYears(5))) {
+                return false;
+            }
+            
+            return true;
+            
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Vérifie si le document est valide pour l'emprunt
+     */
+    public boolean estValidePourEmprunt() {
+        return valider() && disponible;
+    }
+    
+    // === MÉTHODES STATIQUES UTILITAIRES ===
+    
+    /**
+     * Génère un ID temporaire (pour les nouveaux documents non sauvegardés)
+     */
+    public static int genererIdTemporaire() {
+        return -(int) (Math.random() * 1000000);
+    }
+    
+    /**
+     * Vérifie si un ID est temporaire (négatif)
+     */
+    public static boolean estIdTemporaire(int id) {
+        return id < 0;
+    }
 }
