@@ -24,7 +24,7 @@ public class Livre extends Document implements Empruntable {
     public boolean isDisponible() { return disponible; }
     public void setDisponible(boolean disponible) { this.disponible = disponible; }
 
-    //Mathodes
+    //Methodes pour liaison avec JAVAFX
     public StringProperty isbnProperty() { 
         return new SimpleStringProperty(this.isbn); 
     }
