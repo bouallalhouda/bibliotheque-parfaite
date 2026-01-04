@@ -73,7 +73,6 @@ public class MembreController {
 		Membre selected = tableMembres.getSelectionModel().getSelectedItem();
 		try {
 			if (selected != null && selected.getEmail().equals(email) && !selected.getNom().equals(nom)) {
-				// treat as update when a selection is active and fields differ
 				selected.setNom(nom);
 				selected.setPrenom(prenom);
 				selected.setEmail(email);
