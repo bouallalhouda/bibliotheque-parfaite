@@ -3,7 +3,6 @@ package com.bibliotheque.dao.impl;
 import com.bibliotheque.dao.MembreDAO;
 import com.bibliotheque.model.Membre;
 import com.bibliotheque.util.DatabaseConnection;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,16 +98,15 @@ public class MembreDAOImpl implements MembreDAO {
     }
 
     @Override
-    public boolean delete(int id) {
+    public void delete(int id) {
         String sql = "DELETE FROM membres WHERE id=?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
     }
 
     @Override
@@ -156,3 +154,4 @@ public class MembreDAOImpl implements MembreDAO {
         return membres;
     }
 }
+
