@@ -1,27 +1,27 @@
 package com.bibliotheque.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Emprunt {
 
     private int id;
-    private Date dateEmprunt;
-    private Date dateRetourPrevue;
-    private Date dateRetourEffective;
+    private LocalDate dateEmprunt;
+    private LocalDate dateRetourPrevue;
+    private LocalDate dateRetourEffective;
     private Livre livre;
     private Membre membre;
 
-    // Constructor
-    public Emprunt(int id, Date dateEmprunt, Date dateRetourPrevue, Livre livre, Membre membre) {
+    // Constructeur vide
+    public Emprunt() {}
+
+    // Constructeur avec paramètres
+    public Emprunt(int id, LocalDate dateEmprunt, LocalDate dateRetourPrevue, Livre livre, Membre membre) {
         this.id = id;
         this.dateEmprunt = dateEmprunt;
         this.dateRetourPrevue = dateRetourPrevue;
         this.livre = livre;
         this.membre = membre;
     }
-
-    // Empty constructor (useful for DAO)
-    public Emprunt() {}
 
     // Getters & Setters
     public int getId() {
@@ -32,27 +32,27 @@ public class Emprunt {
         this.id = id;
     }
 
-    public Date getDateEmprunt() {
+    public LocalDate getDateEmprunt() {
         return dateEmprunt;
     }
 
-    public void setDateEmprunt(Date dateEmprunt) {
+    public void setDateEmprunt(LocalDate dateEmprunt) {
         this.dateEmprunt = dateEmprunt;
     }
 
-    public Date getDateRetourPrevue() {
+    public LocalDate getDateRetourPrevue() {
         return dateRetourPrevue;
     }
 
-    public void setDateRetourPrevue(Date dateRetourPrevue) {
+    public void setDateRetourPrevue(LocalDate dateRetourPrevue) {
         this.dateRetourPrevue = dateRetourPrevue;
     }
 
-    public Date getDateRetourEffective() {
+    public LocalDate getDateRetourEffective() {
         return dateRetourEffective;
     }
 
-    public void setDateRetourEffective(Date dateRetourEffective) {
+    public void setDateRetourEffective(LocalDate dateRetourEffective) {
         this.dateRetourEffective = dateRetourEffective;
     }
 
