@@ -128,45 +128,39 @@ public void supprimerLivre(String isbn) {
         return livreDAO.findAll();
     }
 
-    // ======================== MÉTHODES POUR LES MEMBRES ========================
+    //  MÉTHODES POUR LES MEMBRES
 
-    /**
-     * Ajoute un nouveau membre
-     * @param membre le membre à ajouter
-     * @throws ValidationException si l'email est invalide
-     */
+    
+     
+    // Ajoute un nouveau membre
+     
     public void ajouterMembre(Membre membre) throws ValidationException {
         if (membre.getEmail() == null || membre.getEmail().trim().isEmpty()) {
             throw new ValidationException("L'email ne peut pas être vide.");
         }
-        // CORRECTION ICI : utiliser isValidEmail() au lieu de validerEmail()
+        
         if (!StringValidator.isValidEmail(membre.getEmail())) {
             throw new ValidationException("L'email '" + membre.getEmail() + "' n'est pas au bon format.");
         }
         membreDAO.save(membre);
-        System.out.println("✅ Membre '" + membre.getPrenom() + " " + membre.getNom() + "' ajouté avec succès.");
+        System.out.println(" Membre '" + membre.getPrenom() + " " + membre.getNom() + "' ajouté avec succès.");
     }
 
-    /**
-     * Modifie un membre existant
-     * @param id l'ID du membre à modifier
-     * @param nouveau les nouvelles données du membre
-     */
+    //Modifie un membre existant
+     
     public void modifierMembre(int id, Membre nouveau) {
         Optional<Membre> optMembre = membreDAO.findById(id);
         if (optMembre.isPresent()) {
             nouveau.setId(id);
             membreDAO.update(nouveau);
-            System.out.println("✅ Membre mis à jour avec succès.");
+            System.out.println("Membre mis à jour avec succès.");
         } else {
-            System.err.println("❌ Aucun membre trouvé avec l'ID: " + id);
+            System.err.println(" Aucun membre trouvé avec l'ID: " + id);
         }
     }
 
-    /**
-     * Active ou désactive un membre (inverse le statut)
-     * @param id l'ID du membre
-     */
+    //Active ou désactive un membre
+     
     public void activerDesactiverMembre(int id) {
         Optional<Membre> optMembre = membreDAO.findById(id);
         if (optMembre.isPresent()) {
@@ -174,33 +168,24 @@ public void supprimerLivre(String isbn) {
             membre.setActif(!membre.isActif());
             membreDAO.update(membre);
             String statut = membre.isActif() ? "activé" : "désactivé";
-            System.out.println("✅ Membre " + statut + " avec succès.");
+            System.out.println(" Membre " + statut + " avec succès.");
         } else {
-            System.err.println("❌ Aucun membre trouvé avec l'ID: " + id);
+            System.err.println(" Aucun membre trouvé avec l'ID: " + id);
         }
     }
 
-    /**
-     * Retourne tous les membres
-     * @return une liste de tous les membres
-     */
+    // Retourne tous les membres
+     
     public List<Membre> getTousLesMembres() {
         return membreDAO.findAll();
     }
 
-    /**
-     * Retourne tous les membres actifs
-     * @return une liste des membres actifs
-     */
     public List<Membre> getMembresActifs() {
         return membreDAO.findActifs();
     }
 
-    /**
-     * Recherche un membre par email
-     * @param email l'email du membre
-     * @return le Membre trouvé ou null
-     */
+    //Recherche un membre par email
+     
     public Membre rechercherMembreParEmail(String email) {
         return membreDAO.findByEmail(email);
     }
