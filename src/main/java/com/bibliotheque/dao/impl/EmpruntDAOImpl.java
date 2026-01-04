@@ -1,4 +1,4 @@
-package com.bibliotheque.dao.impl;
+package com.bibliotheque.dao;
 
 import com.bibliotheque.dao.EmpruntDAO;
 import com.bibliotheque.model.Emprunt;
@@ -7,162 +7,151 @@ import com.bibliotheque.model.Membre;
 import com.bibliotheque.util.DatabaseConnection;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-//it works
-
 public class EmpruntDAOImpl implements EmpruntDAO {
-
     private Connection connection;
-    private LivreDAOImpl livreDAO;
-    private MembreDAOImpl membreDAO;
 
-    public EmpruntDAOImpl() {
-        try {
-            this.connection = DatabaseConnection.getInstance().getConnection();
-            this.livreDAO = new LivreDAOImpl();
-            this.membreDAO = new MembreDAOImpl();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public EmpruntDAOImpl() throws SQLException {
+        this.connection = DatabaseConnection.getInstance().getConnection();
     }
 
-    @Override
-    public void save(Emprunt emprunt) {
-        String sql = "INSERT INTO emprunts (livre_isbn, membre_id, date_emprunt, date_retour_prevue, date_retour_reelle) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, emprunt.getLivre().getIsbn());
-            ps.setInt(2, emprunt.getMembre().getId());
-            ps.setDate(3, new java.sql.Date(emprunt.getDateEmprunt().getTime()));
-            ps.setDate(4, new java.sql.Date(emprunt.getDateRetourPrevue().getTime()));
-            if (emprunt.getDateRetourEffective() != null) {
-                ps.setDate(5, new java.sql.Date(emprunt.getDateRetourEffective().getTime()));
-            } else {
-                ps.setNull(5, Types.DATE);
-            }
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    // Mappe un ResultSet à un objet Emprunt et throws SQLException si erreur SQL
+    private Emprunt mapResultSetToEmprunt(ResultSet rs) throws SQLException {
+        Emprunt emprunt = new Emprunt();
+        emprunt.setId(rs.getInt("id"));
+        emprunt.setDateEmprunt(rs.getObject("date_emprunt", LocalDate.class));
+        emprunt.setDateRetourPrevue(rs.getObject("date_retour_prevue", LocalDate.class));
+        emprunt.setDateRetourEffective(rs.getObject("date_retour_effective", LocalDate.class));
+        
+        // Récupérer l'ID du livre et chercher le Livre
+        int idLivre = rs.getInt("id_livre");
+        int idMembre = rs.getInt("id_membre");        
+        
+        return emprunt;
     }
 
     @Override
     public Optional<Emprunt> findById(int id) {
-        String sql = "SELECT * FROM emprunts WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) return Optional.of(mapResultSetToEmprunt(rs));
+        String sql = "SELECT * FROM emprunt WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return Optional.of(mapResultSetToEmprunt(rs));
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Erreur lors de la recherche de l'emprunt par ID: " + e.getMessage());
         }
         return Optional.empty();
     }
 
     @Override
     public List<Emprunt> findAll() {
-        List<Emprunt> list = new ArrayList<>();
-        String sql = "SELECT * FROM emprunts";
-        try (Statement st = connection.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) list.add(mapResultSetToEmprunt(rs));
+        List<Emprunt> emprunts = new ArrayList<>();
+        String sql = "SELECT * FROM emprunt";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                emprunts.add(mapResultSetToEmprunt(rs));
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Erreur lors de la récupération de tous les emprunts: " + e.getMessage());
         }
-        return list;
+        return emprunts;
     }
 
     @Override
-    public List<Emprunt> findByMembre(int membreId) {
-        List<Emprunt> list = new ArrayList<>();
-        String sql = "SELECT * FROM emprunts WHERE membre_id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, membreId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) list.add(mapResultSetToEmprunt(rs));
+    public void save(Emprunt emprunt) {
+        String sql = "INSERT INTO emprunt (date_emprunt, date_retour_prevue, date_retour_effective, id_livre, id_membre) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setObject(1, emprunt.getDateEmprunt());
+            stmt.setObject(2, emprunt.getDateRetourPrevue());
+            stmt.setObject(3, emprunt.getDateRetourEffective());
+            stmt.setInt(4, emprunt.getLivre().getId());
+            stmt.setInt(5, emprunt.getMembre().getId());
+            stmt.executeUpdate();
+            System.out.println("✅ Emprunt inséré avec succès.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Erreur lors de l'insertion de l'emprunt: " + e.getMessage());
         }
-        return list;
-    }
-
-    @Override
-    public List<Emprunt> findByLivreIsbn(String isbn) {
-        List<Emprunt> list = new ArrayList<>();
-        String sql = "SELECT * FROM emprunts WHERE livre_isbn = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, isbn);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) list.add(mapResultSetToEmprunt(rs));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
-    }
-
-    @Override
-    public List<Emprunt> findEmpruntsEnCours() {
-        List<Emprunt> list = new ArrayList<>();
-        String sql = "SELECT * FROM emprunts WHERE date_retour_reelle IS NULL";
-        try (Statement st = connection.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) list.add(mapResultSetToEmprunt(rs));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return list;
     }
 
     @Override
     public void update(Emprunt emprunt) {
-        String sql = "UPDATE emprunts SET livre_isbn = ?, membre_id = ?, date_emprunt = ?, date_retour_prevue = ?, date_retour_reelle = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, emprunt.getLivre().getIsbn());
-            ps.setInt(2, emprunt.getMembre().getId());
-            ps.setDate(3, new java.sql.Date(emprunt.getDateEmprunt().getTime()));
-            ps.setDate(4, new java.sql.Date(emprunt.getDateRetourPrevue().getTime()));
-            if (emprunt.getDateRetourEffective() != null) {
-                ps.setDate(5, new java.sql.Date(emprunt.getDateRetourEffective().getTime()));
-            } else {
-                ps.setNull(5, Types.DATE);
-            }
-            ps.setInt(6, emprunt.getId());
-            ps.executeUpdate();
+        String sql = "UPDATE emprunt SET date_emprunt = ?, date_retour_prevue = ?, date_retour_effective = ?, id_livre = ?, id_membre = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setObject(1, emprunt.getDateEmprunt());
+            stmt.setObject(2, emprunt.getDateRetourPrevue());
+            stmt.setObject(3, emprunt.getDateRetourEffective());
+            stmt.setInt(4, emprunt.getLivre().getId());
+            stmt.setInt(5, emprunt.getMembre().getId());
+            stmt.setInt(6, emprunt.getId());
+            stmt.executeUpdate();
+            System.out.println("✅ Emprunt mis à jour avec succès.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Erreur lors de la mise à jour de l'emprunt: " + e.getMessage());
         }
-    }
-
-    // Helper method to map ResultSet to Emprunt object
-    private Emprunt mapResultSetToEmprunt(ResultSet rs) throws SQLException {
-        Emprunt e = new Emprunt();
-        e.setId(rs.getInt("id"));
-        e.setDateEmprunt(rs.getDate("date_emprunt"));
-        e.setDateRetourPrevue(rs.getDate("date_retour_prevue"));
-        e.setDateRetourEffective(rs.getDate("date_retour_reelle"));
-
-        String isbn = rs.getString("livre_isbn");
-        List<Livre> livres = livreDAO.findByIsbn(isbn);
-        Livre livre = livres.isEmpty() ? null : livres.get(0);
-        e.setLivre(livre);
-
-        int membreId = rs.getInt("membre_id");
-        Membre membre = membreDAO.findById(membreId).orElse(null);
-        e.setMembre(membre);
-
-        return e;
     }
 
     @Override
-    public boolean delete(int id) {
-        String sql = "DELETE FROM emprunts WHERE id=?";
-
-        try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
+    public void delete(int id) {
+        String sql = "DELETE FROM emprunt WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+            System.out.println("✅ Emprunt supprimé avec succès.");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Erreur lors de la suppression de l'emprunt: " + e.getMessage());
         }
-        return false;
+    }
+
+    @Override
+    public List<Emprunt> findByMembre(int idMembre) {
+        List<Emprunt> emprunts = new ArrayList<>();
+        String sql = "SELECT * FROM emprunt WHERE id_membre = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, idMembre);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                emprunts.add(mapResultSetToEmprunt(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la recherche des emprunts du membre: " + e.getMessage());
+        }
+        return emprunts;
+    }
+
+    @Override
+    public List<Emprunt> findEnCours() {
+        List<Emprunt> emprunts = new ArrayList<>();
+        String sql = "SELECT * FROM emprunt WHERE date_retour_effective IS NULL";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                emprunts.add(mapResultSetToEmprunt(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des emprunts en cours: " + e.getMessage());
+        }
+        return emprunts;
+    }
+
+    @Override
+    public int countEmpruntsEnCours(int idMembre) {
+        String sql = "SELECT COUNT(*) as count FROM emprunt WHERE id_membre = ? AND date_retour_effective IS NULL";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, idMembre);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du comptage des emprunts en cours: " + e.getMessage());
+        }
+        return 0;
     }
 }
