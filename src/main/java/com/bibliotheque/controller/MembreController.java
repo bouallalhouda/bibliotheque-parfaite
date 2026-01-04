@@ -21,7 +21,7 @@ public class MembreController {
 	@FXML private TextField emailField;
 	@FXML private Button ajouterButton;
 
-	private final BibliothequeService service = new BibliothequeService();
+	private BibliothequeService service;
 	private ObservableList<Membre> membres = FXCollections.observableArrayList();
 
 	public void setMainController(MainController main) {
@@ -30,7 +30,16 @@ public class MembreController {
 
 	@FXML
 	public void initialize() {
-		// Configure columns if FXML didn't set cellValueFactory
+		try {
+			// Initialise le service
+			service = new BibliothequeService();
+		} catch (Exception e) {
+			e.printStackTrace();
+			showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d'initialiser le service");
+			return;
+		}
+
+		
 		if (colId != null) colId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		if (colNom != null) colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
 		if (colPrenom != null) colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
