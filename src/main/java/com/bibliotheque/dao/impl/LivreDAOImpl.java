@@ -18,8 +18,7 @@ public class LivreDAOImpl implements LivreDAO {
 
     private Livre mapResultSetToLivre(ResultSet rs) throws SQLException {
         Livre livre = new Livre();
-        // ⬇️ NE PAS UTILISER setId() - PAS DE COLONNE id !
-        // livre.setId(rs.getInt("id")); // ⬅️ COMMENTE OU ENLÈVE CETTE LIGNE
+        
         livre.setIsbn(rs.getString("isbn"));
         livre.setTitre(rs.getString("titre"));
         livre.setAuteur(rs.getString("auteur"));
@@ -30,8 +29,8 @@ public class LivreDAOImpl implements LivreDAO {
 
     @Override
     public Optional<Livre> findById(int id) {
-        // ⬇️ CETTE MÉTHODE NE PEUT PAS MARCHER SANS COLONNE id
-        System.err.println("⚠️  findById() ne fonctionne pas - table n'a pas de colonne 'id'");
+        
+        System.err.println("  findById() ne fonctionne pas - table n'a pas de colonne 'id'");
         return Optional.empty();
     }
 
@@ -44,9 +43,9 @@ public class LivreDAOImpl implements LivreDAO {
             while (rs.next()) {
                 livres.add(mapResultSetToLivre(rs));
             }
-            System.out.println("✅ DAO: " + livres.size() + " livres trouvés");
+            System.out.println(" DAO: " + livres.size() + " livres trouvés");
         } catch (SQLException e) {
-            System.err.println("❌ Erreur DAO findAll: " + e.getMessage());
+            System.err.println(" Erreur DAO findAll: " + e.getMessage());
         }
         return livres;
     }
@@ -61,9 +60,9 @@ public class LivreDAOImpl implements LivreDAO {
             stmt.setInt(4, livre.getAnneePublication());
             stmt.setBoolean(5, livre.isDisponible());
             stmt.executeUpdate();
-            System.out.println("✅ DAO: Livre sauvegardé - " + livre.getTitre());
+            System.out.println(" DAO: Livre sauvegardé - " + livre.getTitre());
         } catch (SQLException e) {
-            System.err.println("❌ Erreur DAO save: " + e.getMessage());
+            System.err.println(" Erreur DAO save: " + e.getMessage());
         }
     }
 
@@ -77,27 +76,27 @@ public class LivreDAOImpl implements LivreDAO {
             stmt.setBoolean(4, livre.isDisponible());
             stmt.setString(5, livre.getIsbn()); // Utilise ISBN comme identifiant
             stmt.executeUpdate();
-            System.out.println("✅ DAO: Livre mis à jour - " + livre.getTitre());
+            System.out.println(" DAO: Livre mis à jour - " + livre.getTitre());
         } catch (SQLException e) {
-            System.err.println("❌ Erreur DAO update: " + e.getMessage());
+            System.err.println(" Erreur DAO update: " + e.getMessage());
         }
     }
 
     @Override
     public void delete(int id) {
-        // ⬇️ CETTE MÉTHODE NE PEUT PAS MARCHER SANS COLONNE id
-        System.err.println("⚠️  delete(int id) ne fonctionne pas - utiliser ISBN");
+        
+        System.err.println("  delete(int id) ne fonctionne pas - utiliser ISBN");
     }
 
-    // ⬇️ AJOUTE CETTE MÉTHODE POUR SUPPRIMER PAR ISBN
+    
     public void deleteByIsbn(String isbn) {
         String sql = "DELETE FROM livre WHERE isbn = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, isbn);
             stmt.executeUpdate();
-            System.out.println("✅ DAO: Livre supprimé (ISBN: " + isbn + ")");
+            System.out.println(" DAO: Livre supprimé (ISBN: " + isbn + ")");
         } catch (SQLException e) {
-            System.err.println("❌ Erreur DAO deleteByIsbn: " + e.getMessage());
+            System.err.println(" Erreur DAO deleteByIsbn: " + e.getMessage());
         }
     }
 
@@ -111,7 +110,7 @@ public class LivreDAOImpl implements LivreDAO {
                 return mapResultSetToLivre(rs);
             }
         } catch (SQLException e) {
-            System.err.println("❌ Erreur DAO findByIsbn: " + e.getMessage());
+            System.err.println(" Erreur DAO findByIsbn: " + e.getMessage());
         }
         return null;
     }
@@ -127,7 +126,7 @@ public class LivreDAOImpl implements LivreDAO {
                 livres.add(mapResultSetToLivre(rs));
             }
         } catch (SQLException e) {
-            System.err.println("❌ Erreur DAO findByTitre: " + e.getMessage());
+            System.err.println(" Erreur DAO findByTitre: " + e.getMessage());
         }
         return livres;
     }
@@ -143,7 +142,7 @@ public class LivreDAOImpl implements LivreDAO {
                 livres.add(mapResultSetToLivre(rs));
             }
         } catch (SQLException e) {
-            System.err.println("❌ Erreur DAO findByAuteur: " + e.getMessage());
+            System.err.println(" Erreur DAO findByAuteur: " + e.getMessage());
         }
         return livres;
     }
@@ -158,7 +157,7 @@ public class LivreDAOImpl implements LivreDAO {
                 livres.add(mapResultSetToLivre(rs));
             }
         } catch (SQLException e) {
-            System.err.println("❌ Erreur DAO findDisponibles: " + e.getMessage());
+            System.err.println(" Erreur DAO findDisponibles: " + e.getMessage());
         }
         return livres;
     }
