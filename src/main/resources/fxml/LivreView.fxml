@@ -1,284 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Font?>
 
-<VBox xmlns="http://javafx.com/javafx" 
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.bibliotheque.controller.LivreController"
-      spacing="15"
-      style="-fx-background-color: linear-gradient(to bottom, #f8f9fa, #e9ecef); -fx-padding: 20;">
+<VBox spacing="10.0" xmlns="http://javafx.com/javafx/21" 
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.bibliotheque.controller.LivreController">
     
-    <!-- ========== EN-TÊTE ========== -->
-    <HBox spacing="20" alignment="CENTER_LEFT">
-        <Label text="📚" style="-fx-font-size: 36px;"/>
-        <VBox spacing="5">
-            <Label text="Gestion des Livres" 
-                   style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-            <Label text="Gérez votre collection de livres" 
-                   style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;"/>
-        </VBox>
-        <Region HBox.hgrow="ALWAYS"/>
-    </HBox>
+    <padding><Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/></padding>
     
-    <!-- ========== BARRE DE RECHERCHE ========== -->
-    <VBox spacing="10" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10;">
-        <Label text="🔍 Recherche rapide" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+    <!-- Titre -->
+    <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="📚 Gestion des Livres" />
+    
+    <!-- Formulaire -->
+    <VBox spacing="8.0" style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 10;">
+        <Label style="-fx-font-weight: bold;" text="Ajouter un livre" />
         
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <TextField fx:id="txtRecherche" 
-                       promptText="Tapez un titre, auteur, ISBN ou catégorie..."
-                       HBox.hgrow="ALWAYS"
-                       style="-fx-pref-height: 40px; -fx-font-size: 14px;"/>
-            
-            <Button fx:id="btnRechercher" text="Rechercher" 
-                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; 
-                           -fx-pref-height: 40px; -fx-pref-width: 120px;"/>
-            
-            <Button fx:id="btnRechercheAvancee" text="Recherche avancée" 
-                    style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold;
-                           -fx-pref-height: 40px;"/>
+        <HBox spacing="10.0">
+            <TextField fx:id="txtISBN" prefWidth="120.0" promptText="ISBN" />
+            <TextField fx:id="txtTitre" prefWidth="150.0" promptText="Titre" />
+            <TextField fx:id="txtAuteur" prefWidth="120.0" promptText="Auteur" />
+            <TextField fx:id="txtAnnee" prefWidth="80.0" promptText="Année" />
         </HBox>
         
-        <!-- Filtres rapides -->
-        <HBox spacing="10">
-            <Button text="📖 Tous les livres" 
-                    onAction="#chargerLivres"
-                    style="-fx-background-color: #2ecc71; -fx-text-fill: white;"/>
-            <Button text="✅ Disponibles" 
-                    onAction="#filtrerDisponibles"
-                    style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
-            <Button text="❌ Empruntés" 
-                    onAction="#filtrerEmpruntes"
-                    style="-fx-background-color: #e74c3c; -fx-text-fill: white;"/>
-            <Button text="⭐ Nouveautés" 
-                    onAction="#filtrerNouveautes"
-                    style="-fx-background-color: #f39c12; -fx-text-fill: white;"/>
+        <HBox spacing="10.0">
+            <Button text="➕ Ajouter" onAction="#handleAjouterLivre" 
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
         </HBox>
     </VBox>
     
-    <!-- ========== STATISTIQUES ========== -->
-    <HBox spacing="20" alignment="CENTER">
-        <VBox alignment="CENTER" spacing="5" 
-              style="-fx-background-color: #3498db; -fx-background-radius: 8; -fx-padding: 10; -fx-pref-width: 120;">
-            <Label text="📊" style="-fx-font-size: 24px;"/>
-            <Label fx:id="lblTotalLivres" text="0" 
-                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-            <Label text="Livres" style="-fx-text-fill: white; -fx-font-size: 12px;"/>
-        </VBox>
-        
-        <VBox alignment="CENTER" spacing="5" 
-              style="-fx-background-color: #2ecc71; -fx-background-radius: 8; -fx-padding: 10; -fx-pref-width: 120;">
-            <Label text="✅" style="-fx-font-size: 24px;"/>
-            <Label fx:id="lblLivresDisponibles" text="0" 
-                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-            <Label text="Disponibles" style="-fx-text-fill: white; -fx-font-size: 12px;"/>
-        </VBox>
-        
-        <VBox alignment="CENTER" spacing="5" 
-              style="-fx-background-color: #e74c3c; -fx-background-radius: 8; -fx-padding: 10; -fx-pref-width: 120;">
-            <Label text="📚" style="-fx-font-size: 24px;"/>
-            <Label fx:id="lblLivresEmpruntes" text="0" 
-                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-            <Label text="Empruntés" style="-fx-text-fill: white; -fx-font-size: 12px;"/>
-        </VBox>
-        
-        <VBox alignment="CENTER" spacing="5" 
-              style="-fx-background-color: #9b59b6; -fx-background-radius: 8; -fx-padding: 10; -fx-pref-width: 120;">
-            <Label text="📈" style="-fx-font-size: 24px;"/>
-            <Label fx:id="lblTauxDisponibilite" text="0%" 
-                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-            <Label text="Disponibilité" style="-fx-text-fill: white; -fx-font-size: 12px;"/>
-        </VBox>
-    </HBox>
-    
-    <!-- ========== BARRE D'OUTILS ========== -->
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <Label text="Actions :" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
-        
-        <Button fx:id="btnAjouter" text="➕ Ajouter un livre" 
-                onAction="#ajouterLivre"
-                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;
-                       -fx-pref-height: 40px;"/>
-        
-        <Button fx:id="btnModifier" text="✏️ Modifier" 
-                onAction="#modifierLivre" disable="true"
-                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold;
-                       -fx-pref-height: 40px;"/>
-        
-        <Button fx:id="btnSupprimer" text="🗑️ Supprimer" 
-                onAction="#supprimerLivre" disable="true"
-                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;
-                       -fx-pref-height: 40px;"/>
-        
-        <Button fx:id="btnVoirDetails" text="👁️ Voir détails" 
-                onAction="#voirDetails" disable="true"
-                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold;
-                       -fx-pref-height: 40px;"/>
-        
-        <Region HBox.hgrow="ALWAYS"/>
-        
-        <Button fx:id="btnRafraichir" text="🔄 Rafraîchir" 
-                onAction="#rafraichir"
-                style="-fx-background-color: #7f8c8d; -fx-text-fill: white; -fx-font-weight: bold;
-                       -fx-pref-height: 40px;"/>
-        
-        <Button fx:id="btnExporter" text="📥 Exporter" 
-                onAction="#exporterLivres"
-                style="-fx-background-color: #34495e; -fx-text-fill: white; -fx-font-weight: bold;
-                       -fx-pref-height: 40px;"/>
-    </HBox>
-    
-    <!-- ========== TABLEAU DES LIVRES ========== -->
-    <VBox spacing="10" VBox.vgrow="ALWAYS">
-        <Label text="📋 Liste des livres" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-        
-        <TableView fx:id="tableViewLivres" VBox.vgrow="ALWAYS">
-            <columns>
-                <!-- Colonne ID -->
-                <TableColumn fx:id="colId" text="ID" prefWidth="50">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="id" />
-                    </cellValueFactory>
-                </TableColumn>
-                
-                <!-- Colonne Titre -->
-                <TableColumn fx:id="colTitre" text="Titre" prefWidth="250">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="titre" />
-                    </cellValueFactory>
-                </TableColumn>
-                
-                <!-- Colonne Auteur -->
-                <TableColumn fx:id="colAuteur" text="Auteur" prefWidth="150">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="auteur" />
-                    </cellValueFactory>
-                </TableColumn>
-                
-                <!-- Colonne ISBN -->
-                <TableColumn fx:id="colIsbn" text="ISBN" prefWidth="120">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="isbn" />
-                    </cellValueFactory>
-                </TableColumn>
-                
-                <!-- Colonne Année -->
-                <TableColumn fx:id="colAnnee" text="Année" prefWidth="80">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="datePublication" />
-                    </cellValueFactory>
-                </TableColumn>
-                
-                <!-- Colonne Catégorie -->
-                <TableColumn fx:id="colCategorie" text="Catégorie" prefWidth="120">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="categorie" />
-                    </cellValueFactory>
-                </TableColumn>
-                
-                <!-- Colonne Quantité Totale -->
-                <TableColumn fx:id="colQuantiteTotal" text="Total" prefWidth="60">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="quantiteTotale" />
-                    </cellValueFactory>
-                </TableColumn>
-                
-                <!-- Colonne Disponible -->
-                <TableColumn fx:id="colQuantiteDispo" text="Dispo" prefWidth="60">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="quantiteDisponible" />
-                    </cellValueFactory>
-                </TableColumn>
-                
-                <!-- Colonne État (calculé) -->
-                <TableColumn fx:id="colEtat" text="État" prefWidth="100">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="disponible" />
-                    </cellValueFactory>
-                    <cellFactory>
-                        <TableColumn fx:factory="call">
-                            <Callback>
-                                <TableCell>
-                                    <Label fx:id="lblEtatCell">
-                                        <graphic>
-                                            <Region fx:id="iconRegion" style="-fx-background-color: gray; 
-                                                                              -fx-min-width: 10; -fx-min-height: 10;
-                                                                              -fx-max-width: 10; -fx-max-height: 10;
-                                                                              -fx-background-radius: 5;"/>
-                                        </graphic>
-                                    </Label>
-                                </TableCell>
-                            </Callback>
-                        </TableColumn>
-                    </cellFactory>
-                </TableColumn>
-                
-                <!-- Colonne Actions -->
-                <TableColumn fx:id="colActions" text="Actions" prefWidth="150">
-                    <cellFactory>
-                        <TableColumn fx:factory="call">
-                            <Callback>
-                                <TableCell>
-                                    <HBox spacing="5">
-                                        <Button text="✏️" style="-fx-background-color: transparent; -fx-text-fill: #f39c12;"
-                                                onAction="#modifierLivreFromCell"/>
-                                        <Button text="🗑️" style="-fx-background-color: transparent; -fx-text-fill: #e74c3c;"
-                                                onAction="#supprimerLivreFromCell"/>
-                                        <Button text="👁️" style="-fx-background-color: transparent; -fx-text-fill: #3498db;"
-                                                onAction="#voirDetailsFromCell"/>
-                                    </HBox>
-                                </TableCell>
-                            </Callback>
-                        </TableColumn>
-                    </cellFactory>
-                </TableColumn>
-            </columns>
-            
-            <!-- Style du tableau -->
-            <styleClass>
-                <String fx:value="table-view" />
-                <String fx:value="custom-table" />
-            </styleClass>
-        </TableView>
-        
-        <!-- Pagination -->
-        <HBox spacing="10" alignment="CENTER_RIGHT">
-            <Label text="Page :"/>
-            <Button text="◀️ Précédent" style="-fx-background-color: transparent;"/>
-            <Label fx:id="lblPageCourante" text="1"/>
-            <Label text="/"/>
-            <Label fx:id="lblPagesTotales" text="1"/>
-            <Button text="Suivant ▶️" style="-fx-background-color: transparent;"/>
-            <Label text="Livres par page :"/>
-            <ComboBox fx:id="cbItemsParPage" prefWidth="80">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="10" />
-                        <String fx:value="25" />
-                        <String fx:value="50" />
-                        <String fx:value="100" />
-                    </FXCollections>
-                </items>
-                <value>
-                    <String fx:value="25" />
-                </value>
-            </ComboBox>
-        </HBox>
-    </VBox>
-    
-    <!-- ========== PIED DE PAGE ========== -->
-    <HBox spacing="20" alignment="CENTER" style="-fx-border-color: #ddd; -fx-border-width: 1 0 0 0; -fx-padding: 10 0 0 0;">
-        <Label text="💡 Astuce : Double-cliquez sur une ligne pour modifier le livre"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="lblDerniereMiseAJour" text="Dernière mise à jour : --/--/---- --:--"/>
-        <Label text="© Bibliothèque - 2024"/>
-    </HBox>
-    
-    <!-- ========== STYLES CSS ========== -->
-    <stylesheets>
-        <URL value="@/com/bibliotheque/view/css/livre.css" />
-    </stylesheets>
+    <!-- TableView SIMPLE -->
+    <TableView fx:id="tableLivres" prefHeight="300.0" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colISBN" text="ISBN" prefWidth="100"/>
+            <TableColumn fx:id="colTitre" text="Titre" prefWidth="200"/>
+            <TableColumn fx:id="colAuteur" text="Auteur" prefWidth="150"/>
+            <TableColumn fx:id="colAnnee" text="Année" prefWidth="80"/>
+            <TableColumn fx:id="colDisponible" text="Disponible" prefWidth="100"/>
+        </columns>
+    </TableView>
     
 </VBox>
