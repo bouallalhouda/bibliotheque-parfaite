@@ -21,48 +21,48 @@ public class LivreController {
     @FXML private TextField txtAuteur;
     @FXML private TextField txtISBN;
     @FXML private TextField txtAnnee;
-    @FXML private TextField txtRecherche;  // ⬅️ AJOUTÉ
+    @FXML private TextField txtRecherche;  
     
     private BibliothequeService service;
 
     @FXML
     public void initialize() {
-        System.out.println("🎬 LivreController.initialize() DÉMARRÉ");
+        System.out.println(" LivreController.initialize() DÉMARRÉ");
         
         try {
             // Initialise le service
             service = new BibliothequeService();
-            System.out.println("✅ Service créé");
+            System.out.println(" Service créé");
             
-            // Configure TOUTES les colonnes
+            // Configure  colonnes
             colISBN.setCellValueFactory(new PropertyValueFactory<>("isbn"));
             colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
             colAuteur.setCellValueFactory(new PropertyValueFactory<>("auteur"));
             colAnnee.setCellValueFactory(new PropertyValueFactory<>("anneePublication"));
             colDisponible.setCellValueFactory(new PropertyValueFactory<>("disponible"));
             
-            System.out.println("✅ Colonnes configurées");
+            System.out.println(" Colonnes configurées");
             
             // Charge les données
             chargerLivres();
             
         } catch (Exception e) {
-            System.err.println("❌ ERREUR initialize: " + e.getMessage());
+            System.err.println(" ERREUR initialize: " + e.getMessage());
             e.printStackTrace();
             showAlert("Erreur initialisation", "Erreur lors du chargement des livres: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     private void chargerLivres() {
-        System.out.println("🔄 chargerLivres() appelé");
+        System.out.println(" chargerLivres() appelé");
         
         try {
             List<Livre> livres = service.getTousLesLivres();
-            System.out.println("✅ Service a retourné: " + livres.size() + " livres");
+            System.out.println(" Service a retourné: " + livres.size() + " livres");
             
-            // DEBUG: Affiche chaque livre
+            // Affiche chaque livre
             for (Livre l : livres) {
-                System.out.println("📖 " + l.getTitre() + " | " + l.getAuteur() + 
+                System.out.println(" " + l.getTitre() + " | " + l.getAuteur() + 
                                  " | ISBN: " + l.getIsbn() + 
                                  " | Année: " + l.getAnneePublication() +
                                  " | Disponible: " + l.isDisponible());
@@ -71,10 +71,10 @@ public class LivreController {
             ObservableList<Livre> obsLivres = FXCollections.observableArrayList(livres);
             tableLivres.setItems(obsLivres);
             
-            System.out.println("✅ TableView mise à jour avec " + obsLivres.size() + " livres");
+            System.out.println(" TableView mise à jour avec " + obsLivres.size() + " livres");
             
         } catch (Exception e) {
-            System.err.println("❌ ERREUR chargerLivres: " + e.getMessage());
+            System.err.println(" ERREUR chargerLivres: " + e.getMessage());
             e.printStackTrace();
             showAlert("Erreur chargement", "Impossible de charger les livres: " + e.getMessage(), Alert.AlertType.ERROR);
         }
@@ -82,7 +82,7 @@ public class LivreController {
 
     @FXML
     private void handleAjouterLivre() {
-        System.out.println("➕ handleAjouterLivre() appelé");
+        System.out.println(" handleAjouterLivre() appelé");
         
         try {
             // Validation des champs
@@ -97,7 +97,7 @@ public class LivreController {
             livre.setTitre(txtTitre.getText().trim());
             livre.setAuteur(txtAuteur.getText().trim());
             
-            // Gestion de l'année (optionnelle)
+            // Gestion de l'année 
             if (!txtAnnee.getText().isEmpty()) {
                 try {
                     livre.setAnneePublication(Integer.parseInt(txtAnnee.getText().trim()));
@@ -111,18 +111,18 @@ public class LivreController {
             
             // Appelle le SERVICE
             service.ajouterLivre(livre);
-            System.out.println("✅ Livre ajouté dans service: " + livre.getTitre());
+            System.out.println(" Livre ajouté dans service: " + livre.getTitre());
             
-            // Rafraîchit l'affichage
+            
             chargerLivres();
             
-            // Vide les champs
+            // Vider les champs
             clearFields();
             
             showAlert("Succès", "Livre ajouté avec succès !", Alert.AlertType.INFORMATION);
             
         } catch (Exception e) {
-            System.err.println("❌ ERREUR handleAjouterLivre: " + e.getMessage());
+            System.err.println(" ERREUR handleAjouterLivre: " + e.getMessage());
             e.printStackTrace();
             showAlert("Erreur validation", e.getMessage(), Alert.AlertType.ERROR);
         }
@@ -162,7 +162,7 @@ public class LivreController {
         if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
             try {
                 service.supprimerLivre(livreSelectionne.getIsbn());
-                System.out.println("✅ Livre supprimé: " + livreSelectionne.getTitre());
+                System.out.println(" Livre supprimé: " + livreSelectionne.getTitre());
                 chargerLivres();
                 showAlert("Succès", "Livre supprimé avec succès !", Alert.AlertType.INFORMATION);
             } catch (Exception e) {
@@ -174,7 +174,7 @@ public class LivreController {
     @FXML
     private void handleRechercher() {
         String recherche = txtRecherche.getText().trim();
-        System.out.println("🔍 Recherche: " + recherche);
+        System.out.println(" Recherche: " + recherche);
         
         if (recherche.isEmpty()) {
             chargerLivres();
@@ -186,17 +186,17 @@ public class LivreController {
             ObservableList<Livre> obsLivres = FXCollections.observableArrayList(livres);
             tableLivres.setItems(obsLivres);
             
-            System.out.println("✅ Recherche trouvée: " + livres.size() + " livres");
+            System.out.println(" Recherche trouvée: " + livres.size() + " livres");
             
         } catch (Exception e) {
-            System.err.println("❌ ERREUR recherche: " + e.getMessage());
+            System.err.println(" ERREUR recherche: " + e.getMessage());
             showAlert("Erreur", "Erreur lors de la recherche", Alert.AlertType.ERROR);
         }
     }
     
     @FXML
     private void handleRafraichir() {
-        System.out.println("🔄 Rafraîchissement manuel");
+        System.out.println(" Rafraîchissement manuel");
         txtRecherche.clear();
         chargerLivres();
     }
@@ -217,6 +217,6 @@ public class LivreController {
     }
     
     public void setMainController(MainController main) {
-        // Méthode pour liaison avec MainController si besoin
+        
     }
 }
