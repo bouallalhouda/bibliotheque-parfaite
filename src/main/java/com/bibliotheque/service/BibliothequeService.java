@@ -33,13 +33,7 @@ public class BibliothequeService {
         this.empruntDAO = new EmpruntDAOImpl();
     }
 
-    // ======================== MÉTHODES POUR LES LIVRES ========================
-
-    /**
-     * Ajoute un livre à la bibliothèque
-     * @param livre le livre à ajouter
-     * @throws ValidationException si l'ISBN est invalide
-     */
+    
     public void ajouterLivre(Livre livre) throws ValidationException {
         if (livre.getIsbn() == null || livre.getIsbn().trim().isEmpty()) {
             throw new ValidationException("L'ISBN ne peut pas être vide.");
@@ -49,24 +43,17 @@ public class BibliothequeService {
             throw new ValidationException("L'ISBN '" + livre.getIsbn() + "' n'est pas au bon format (10 ou 13 chiffres).");
         }
         livreDAO.save(livre);
-        System.out.println("✅ Livre '" + livre.getTitre() + "' ajouté avec succès.");
+        System.out.println(" Livre '" + livre.getTitre() + "' ajouté avec succès.");
     }
 
-    /**
-     * Modifie un livre existant
-     * @param isbn l'ISBN du livre à modifier
-     * @param nouveau les nouvelles données du livre
-     */
+    
 public void modifierLivre(String isbn, Livre nouveau) {
     // NE PAS utiliser nouveau.setId() car pas de colonne id
     livreDAO.update(nouveau);
-    System.out.println("✅ Livre mis à jour avec succès.");
+    System.out.println(" Livre mis à jour avec succès.");
 }
 
-/**
- * Supprime un livre de la bibliothèque
- * @param isbn l'ISBN du livre à supprimer
- */
+
 public void supprimerLivre(String isbn) {
     try {
         // SOLUTION DIRECTE SANS utiliser getId() 
@@ -80,21 +67,16 @@ public void supprimerLivre(String isbn) {
         conn.close();
         
         if (rowsDeleted > 0) {
-            System.out.println("✅ Livre supprimé avec succès (ISBN: " + isbn + ")");
+            System.out.println(" Livre supprimé avec succès (ISBN: " + isbn + ")");
         } else {
-            System.err.println("❌ Aucun livre trouvé avec l'ISBN: " + isbn);
+            System.err.println(" Aucun livre trouvé avec l'ISBN: " + isbn);
         }
         
     } catch (Exception e) {
-        System.err.println("❌ Erreur suppression livre: " + e.getMessage());
+        System.err.println(" Erreur suppression livre: " + e.getMessage());
     }
 }
 
-    /**
-     * Recherche des livres par critère (titre ou auteur)
-     * @param critere le critère de recherche
-     * @return une liste de livres correspondant au critère
-     */
     public List<Livre> rechercherLivres(String critere) {
         List<Livre> resultats = new ArrayList<>();
         
@@ -112,27 +94,16 @@ public void supprimerLivre(String isbn) {
         return resultats;
     }
 
-    /**
-     * Retourne tous les livres disponibles
-     * @return une liste des livres disponibles
-     */
     public List<Livre> getLivresDisponibles() {
         return livreDAO.findDisponibles();
     }
 
-    /**
-     * Retourne tous les livres
-     * @return une liste de tous les livres
-     */
+    
     public List<Livre> getTousLesLivres() {
         return livreDAO.findAll();
     }
 
-    //  MÉTHODES POUR LES MEMBRES
-
     
-     
-    // Ajoute un nouveau membre
      
     public void ajouterMembre(Membre membre) throws ValidationException {
         if (membre.getEmail() == null || membre.getEmail().trim().isEmpty()) {
@@ -190,17 +161,7 @@ public void supprimerLivre(String isbn) {
         return membreDAO.findByEmail(email);
     }
 
-    // ======================== MÉTHODES POUR LES EMPRUNTS ========================
-
-    /**
-     * Emprunte un livre pour un membre
-     * @param isbn l'ISBN du livre à emprunter
-     * @param idMembre l'ID du membre qui emprunte
-     * @return l'Emprunt créé
-     * @throws LivreIndisponibleException si le livre n'existe pas ou n'est pas disponible
-     * @throws MembreInactifException si le membre n'existe pas ou est inactif
-     * @throws LimiteEmpruntDepasseeException si le membre a déjà 3 emprunts en cours
-     */
+    
     public Emprunt emprunterLivre(String isbn, int idMembre) 
             throws LivreIndisponibleException, MembreInactifException, LimiteEmpruntDepasseeException {
         
@@ -243,14 +204,11 @@ public void supprimerLivre(String isbn) {
         empruntDAO.save(emprunt);
         livreDAO.update(livre);
         
-        System.out.println("✅ Emprunt créé: '" + livre.getTitre() + "' pour " + membre.getPrenom() + " " + membre.getNom());
+        System.out.println(" Emprunt créé: '" + livre.getTitre() + "' pour " + membre.getPrenom() + " " + membre.getNom());
         return emprunt;
     }
 
-    /**
-     * Effectue le retour d'un livre emprunté
-     * @param idEmprunt l'ID de l'emprunt
-     */
+    
     public void retournerLivre(int idEmprunt) {
         Optional<Emprunt> optEmprunt = empruntDAO.findById(idEmprunt);
         if (optEmprunt.isPresent()) {
@@ -267,7 +225,7 @@ public void supprimerLivre(String isbn) {
             empruntDAO.update(emprunt);
             livreDAO.update(livre);
             
-            System.out.println("✅ Livre retourné avec succès: '" + livre.getTitre() + "'");
+            System.out.println("Livre retourné avec succès: '" + livre.getTitre() + "'");
             
             // Affiche la pénalité si retard
             int joursRetard = DateUtils.calculerJoursRetard(
@@ -276,18 +234,14 @@ public void supprimerLivre(String isbn) {
             );
             if (joursRetard > 0) {
                 double penalite = DateUtils.calculerPenalite(joursRetard);
-                System.out.println("⚠️  Retard de " + joursRetard + " jour(s). Pénalité: " + penalite + "€");
+                System.out.println("  Retard de " + joursRetard + " jour(s). Pénalité: " + penalite + "€");
             }
         } else {
-            System.err.println("❌ Aucun emprunt trouvé avec l'ID: " + idEmprunt);
+            System.err.println(" Aucun emprunt trouvé avec l'ID: " + idEmprunt);
         }
     }
 
-    /**
-     * Calcule la pénalité de retard pour un emprunt
-     * @param idEmprunt l'ID de l'emprunt
-     * @return le montant de la pénalité (0 si pas de retard)
-     */
+    
     public double calculerPenalite(int idEmprunt) {
         Optional<Emprunt> optEmprunt = empruntDAO.findById(idEmprunt);
         if (!optEmprunt.isPresent()) {
@@ -308,47 +262,30 @@ public void supprimerLivre(String isbn) {
         return DateUtils.calculerPenalite(joursRetard);
     }
 
-    /**
-     * Retourne l'historique des emprunts d'un membre
-     * @param idMembre l'ID du membre
-     * @return une liste des emprunts du membre
-     */
     public List<Emprunt> getHistoriqueEmprunts(int idMembre) {
         return empruntDAO.findByMembre(idMembre);
     }
 
-    /**
-     * Retourne tous les emprunts en cours
-     * @return une liste des emprunts non retournés
-     */
+    
     public List<Emprunt> getEmpruntsEnCours() {
         return empruntDAO.findEnCours();
     }
 
-    /**
-     * Supprime un membre
-     * @param id l'ID du membre à supprimer
-     */
+    
     public void supprimerMembre(int id) {
         membreDAO.delete(id);
-        System.out.println("✅ Membre supprimé avec succès.");
+        System.out.println(" Membre supprimé avec succès.");
     }
 
-    /**
-     * Supprime un emprunt
-     * @param id l'ID de l'emprunt à supprimer
-     */
+    
     public void supprimerEmprunt(int id) {
         empruntDAO.delete(id);
-        System.out.println("✅ Emprunt supprimé avec succès.");
+        System.out.println(" Emprunt supprimé avec succès.");
     }
 
-    /**
-     * Met à jour un membre (compatibilité avec les controllers existants)
-     * @param membre le membre à mettre à jour
-     */
+    
     public void mettreAJourMembre(Membre membre) {
         membreDAO.update(membre);
-        System.out.println("✅ Membre mis à jour avec succès.");
+        System.out.println("Membre mis à jour avec succès.");
     }
 }
