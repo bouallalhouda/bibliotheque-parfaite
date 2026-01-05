@@ -1,121 +1,143 @@
 package com.bibliotheque.service;
 
-import com.bibliotheque.dao.EmpruntDAO;
 import com.bibliotheque.dao.LivreDAO;
 import com.bibliotheque.dao.MembreDAO;
-import com.bibliotheque.dao.impl.EmpruntDAOImpl;
+import com.bibliotheque.dao.EmpruntDAO;
 import com.bibliotheque.dao.impl.LivreDAOImpl;
-import com.bibliotheque.dao.impl.MembreDAOImpl;
-import com.bibliotheque.exception.LimiteEmpruntDepasseeException;
-import com.bibliotheque.exception.LivreIndisponibleException;
-import com.bibliotheque.exception.MembreInactifException;
-import com.bibliotheque.model.Emprunt;
+import com.bibliotheque.dao.MembreDAOImpl;
+import com.bibliotheque.dao.impl.EmpruntDAOImpl;
 import com.bibliotheque.model.Livre;
 import com.bibliotheque.model.Membre;
+import com.bibliotheque.model.Emprunt;
+import com.bibliotheque.exception.LivreIndisponibleException;
+import com.bibliotheque.exception.MembreInactifException;
+import com.bibliotheque.exception.LimiteEmpruntDepasseeException;
 
 import java.util.Date;
+import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.sql.SQLException;
 
 public class EmpruntService {
-
-    private final EmpruntDAO empruntDAO;
-    private final LivreDAO livreDAO;
-    private final MembreDAO membreDAO;
-
-    // Limite d'emprunts par membre
-    private static final int LIMITE_EMPRUNTS = 3;
-
+    
+    private LivreDAO livreDAO;
+    private MembreDAO membreDAO;
+    private EmpruntDAO empruntDAO;
+    
+    // Constructeur qui gère les SQLException
     public EmpruntService() {
-        this.empruntDAO = new EmpruntDAOImpl();
-        this.livreDAO = new LivreDAOImpl();
-        this.membreDAO = new MembreDAOImpl();
+        try {
+            this.livreDAO = new LivreDAOImpl();
+            this.membreDAO = new MembreDAOImpl();
+            this.empruntDAO = new EmpruntDAOImpl();
+        } catch (SQLException e) {
+            // Transforme en RuntimeException pour ne pas devoir déclarer throws
+            throw new RuntimeException("Erreur d'initialisation des DAO: " + e.getMessage(), e);
+        }
     }
-
-    /**
-     * Emprunter un livre
-     */
-    public void emprunterLivre(String isbn, int membreId) throws LivreIndisponibleException, MembreInactifException, LimiteEmpruntDepasseeException {
-        // Vérifier si le livre existe et est disponible
-        List<Livre> livres = livreDAO.findByIsbn(isbn);
-        if (livres.isEmpty()) {
-            throw new LivreIndisponibleException("Le livre n'existe pas.");
+    
+    public Emprunt emprunterLivre(String isbn, int membreId) 
+        throws LivreIndisponibleException, 
+               MembreInactifException, 
+               LimiteEmpruntDepasseeException {
+        
+        // 1. Vérifier si le livre existe et est disponible
+        Livre livre = livreDAO.findByIsbn(isbn);
+        if (livre == null) {
+            throw new LivreIndisponibleException("Livre avec ISBN " + isbn + " introuvable");
         }
-        Livre livre = livres.get(0);
+        
         if (!livre.isDisponible()) {
-            throw new LivreIndisponibleException("Le livre n'est pas disponible.");
+            throw new LivreIndisponibleException("Livre avec ISBN " + isbn + " n'est pas disponible");
         }
-
-        // Vérifier si le membre existe et est actif
-        Optional<Membre> membreOpt = membreDAO.findById(membreId);
-        if (membreOpt.isEmpty() || !membreOpt.get().isActif()) {
-            throw new MembreInactifException("Le membre n'est pas actif.");
+        
+        // 2. Vérifier si le membre existe et est actif
+        Membre membre = membreDAO.findById(membreId).orElse(null);
+        if (membre == null) {
+            throw new MembreInactifException("Membre avec ID " + membreId + " introuvable");
         }
-
-        // Vérifier la limite d'emprunts
-        List<Emprunt> empruntsEnCours = empruntDAO.findEmpruntsEnCours();
-        long empruntsDuMembre = empruntsEnCours.stream()
-                .filter(e -> e.getMembre() != null && e.getMembre().getId() == membreId)
-                .count();
-        if (empruntsDuMembre >= LIMITE_EMPRUNTS) {
-            throw new LimiteEmpruntDepasseeException("Limite d'emprunts dépassée.");
+        
+        if (!membre.isActif()) {
+            throw new MembreInactifException("Membre avec ID " + membreId + " est inactif");
         }
-
-        // Créer l'emprunt
-        Date dateEmprunt = new Date();
-        Date dateRetourPrevue = new Date(dateEmprunt.getTime() + (14 * 24 * 60 * 60 * 1000L)); // 14 jours
-
-        Emprunt emprunt = new Emprunt(0, dateEmprunt, dateRetourPrevue, livre, membreOpt.get());
+        
+        // 3. Vérifier la limite d'emprunts (max 3)
+        int empruntsEnCours = empruntDAO.countEmpruntsEnCours(membreId);
+        if (empruntsEnCours >= 3) {
+            throw new LimiteEmpruntDepasseeException(
+                "Membre " + membreId + " a déjà " + empruntsEnCours + " emprunts en cours (max: 3)"
+            );
+        }
+        
+        // 4. Créer l'emprunt
+        Emprunt emprunt = new Emprunt();
+        emprunt.setLivre(livre);
+        emprunt.setMembre(membre);
+        emprunt.setDateEmprunt(new Date());
+        emprunt.setRetourne(false); // IMPORTANT: initialiser à false
+        
+        // Date de retour prévue: aujourd'hui + 14 jours
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_YEAR, 14);
+        emprunt.setDateRetourPrevue(cal.getTime());
+        
+        // 5. Sauvegarder et mettre à jour la disponibilité
         empruntDAO.save(emprunt);
-
-        // Marquer le livre comme indisponible
         livre.setDisponible(false);
         livreDAO.update(livre);
+        
+        return emprunt;
     }
-
-    /**
-     * Retourner un livre
-     */
+    
     public void retournerLivre(int empruntId) {
-        Optional<Emprunt> empruntOpt = empruntDAO.findById(empruntId);
-        if (empruntOpt.isPresent()) {
-            Emprunt emprunt = empruntOpt.get();
-            emprunt.setDateRetourEffective(new Date());
-            empruntDAO.update(emprunt);
-
-            // Marquer le livre comme disponible
-            if (emprunt.getLivre() != null) {
-                emprunt.getLivre().setDisponible(true);
-                livreDAO.update(emprunt.getLivre());
+        try {
+            Emprunt emprunt = empruntDAO.findById(empruntId).orElse(null);
+            if (emprunt != null && !emprunt.isRetourne()) { // Vérifier isRetourne() au lieu de dateRetourReelle
+                emprunt.setDateRetourReelle(new Date()); // CORRIGÉ: setDateRetourReelle (pas Effective)
+                emprunt.setRetourne(true); // Marquer comme retourné
+                empruntDAO.update(emprunt);
+                
+                Livre livre = emprunt.getLivre();
+                livre.setDisponible(true);
+                livreDAO.update(livre);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
-
-    /**
-     * Obtenir tous les emprunts
-     */
-    public List<Emprunt> getTousLesEmprunts() {
-        return empruntDAO.findAll();
+    
+    public double calculerPenalite(int empruntId) {
+        Emprunt emprunt = empruntDAO.findById(empruntId).orElse(null);
+        if (emprunt == null || emprunt.isRetourne()) { // Vérifier isRetourne() au lieu de dateRetourReelle
+            return 0.0;
+        }
+        
+        Date aujourdhui = new Date();
+        if (aujourdhui.after(emprunt.getDateRetourPrevue())) {
+            long diff = aujourdhui.getTime() - emprunt.getDateRetourPrevue().getTime();
+            long joursRetard = diff / (1000 * 60 * 60 * 24);
+            return joursRetard * 0.50;
+        }
+        
+        return 0.0;
     }
-
-    /**
-     * Obtenir les emprunts en cours
-     */
+    
     public List<Emprunt> getEmpruntsEnCours() {
-        return empruntDAO.findEmpruntsEnCours();
+        return empruntDAO.findEnCours();
     }
-
-    /**
-     * Obtenir les emprunts d'un membre
-     */
-    public List<Emprunt> getEmpruntsParMembre(int membreId) {
-        return empruntDAO.findByMembre(membreId);
-    }
-
-    /**
-     * Obtenir les emprunts d'un livre
-     */
-    public List<Emprunt> getEmpruntsParLivre(String isbn) {
-        return empruntDAO.findByLivreIsbn(isbn);
+    
+    public List<Emprunt> getEmpruntsEnRetard() {
+        List<Emprunt> empruntsEnCours = empruntDAO.findEnCours();
+        List<Emprunt> empruntsEnRetard = new ArrayList<>();
+        Date aujourdhui = new Date();
+        
+        for (Emprunt emprunt : empruntsEnCours) {
+            if (aujourdhui.after(emprunt.getDateRetourPrevue())) {
+                empruntsEnRetard.add(emprunt);
+            }
+        }
+        
+        return empruntsEnRetard;
     }
 }
