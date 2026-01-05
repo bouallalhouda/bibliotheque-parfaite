@@ -1,12 +1,12 @@
-// Exception livre indisponible - pour signaler qu'un livre n'est pas disponible (déjà emprunté ou inexistant)
+// Exception limite emprunt - pour signaler limite de 3 emprunts en cours
 package com.bibliotheque.exception;
 
-public class LivreIndisponibleException extends Exception {
-    public LivreIndisponibleException(String message) {
+public class LimiteEmpruntDepasseeException extends Exception {
+    public LimiteEmpruntDepasseeException(String message) {
         super(message);
     }
     
-    public LivreIndisponibleException(String message, Throwable cause) {
+    public LimiteEmpruntDepasseeException(String message, Throwable cause) {
         super(message, cause);
     }
 }
