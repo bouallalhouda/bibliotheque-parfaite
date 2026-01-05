@@ -10,7 +10,7 @@
     <padding><Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/></padding>
     
     <!-- Titre -->
-    <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text="📚 Gestion des Livres" />
+    <Label style="-fx-font-size: 18; -fx-font-weight: bold;" text=" Gestion des Livres" />
     
     <!-- Formulaire -->
     <VBox spacing="8.0" style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-padding: 10;">
@@ -24,12 +24,12 @@
         </HBox>
         
         <HBox spacing="10.0">
-            <Button text="➕ Ajouter" onAction="#handleAjouterLivre" 
+            <Button text=" Ajouter" onAction="#handleAjouterLivre" 
                     style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
         </HBox>
     </VBox>
     
-    <!-- TableView SIMPLE -->
+    
     <TableView fx:id="tableLivres" prefHeight="300.0" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="colISBN" text="ISBN" prefWidth="100"/>
