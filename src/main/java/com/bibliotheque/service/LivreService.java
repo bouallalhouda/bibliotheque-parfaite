@@ -5,9 +5,7 @@ import com.bibliotheque.dao.impl.LivreDAOImpl;
 import com.bibliotheque.model.Livre;
 import java.util.List;
 
-/**
- * Service pour la gestion des livres (couche métier)
- */
+
 public class LivreService {
     
     private LivreDAO livreDAO;
@@ -69,7 +67,7 @@ public class LivreService {
         return livreDAO.delete(id);
     }
     
-    // === RECHERCHE ===
+    
     public List<Livre> rechercherParTitre(String titre) {
         return livreDAO.findByTitre(titre);
     }
@@ -93,7 +91,7 @@ public class LivreService {
         return livreDAO.searchAdvanced(titre, auteur, categorie, isbn, anneeMin, anneeMax);
     }
     
-    // === STATISTIQUES ===
+  
     public int getNombreTotalLivres() {
         return livreDAO.countTotalLivres();
     }
