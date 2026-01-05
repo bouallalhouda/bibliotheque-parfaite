@@ -13,8 +13,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.SQLException;
 
-/*Contrôleur pour la gestion des emprunts de livres.*/
-
+/**
+ * Contrôleur pour la gestion des emprunts de livres.
+ * Permet d'ajouter des emprunts, de retourner des livres et de consulter l'historique.
+ */
 public class EmpruntController {
     
     // Formulaire d'emprunt
@@ -35,7 +37,9 @@ public class EmpruntController {
     private BibliothequeService service;
     private ObservableList<Emprunt> emprunts = FXCollections.observableArrayList();
     
-    /* Initialise le contrôleur des emprunts.*/
+    /**
+     * Initialise le contrôleur des emprunts.
+     */
     @FXML
     public void initialize() {
         try {
@@ -64,13 +68,17 @@ public class EmpruntController {
         }
     }
     
-    /* Charge les emprunts en cours dans le tableau.*/
+    /**
+     * Charge les emprunts en cours dans le tableau.
+     */
     private void chargerEmprunts() {
         emprunts.setAll(service.getEmpruntsEnCours());
         if (tableEmprunts != null) tableEmprunts.setItems(emprunts);
     }
     
-    /* Traite un nouvel emprunt de livre.*/
+    /**
+     * Traite un nouvel emprunt de livre.
+     */
     @FXML
     private void handleEmprunter() {
         String isbn = txtISBN.getText().trim();
@@ -110,7 +118,9 @@ public class EmpruntController {
         }
     }
     
-    /* Traite le retour d'un livre emprunté.*/
+    /**
+     * Traite le retour d'un livre emprunté.
+     */
     @FXML
     private void handleRetourner() {
         String idEmpruntStr = txtIdEmprunt.getText().trim();
@@ -148,7 +158,9 @@ public class EmpruntController {
         }
     }
     
-    /* Affiche une boîte de dialogue d'alerte.*/
+    /**
+     * Affiche une boîte de dialogue d'alerte.
+     */
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
