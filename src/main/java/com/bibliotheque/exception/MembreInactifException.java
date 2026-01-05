@@ -1,4 +1,4 @@
-// Exception membre inactif 
+// Exception membre inactif - pour signaler qu'un membre est désactivé et ne peut pas emprunter
 package com.bibliotheque.exception;
 
 public class MembreInactifException extends Exception {
