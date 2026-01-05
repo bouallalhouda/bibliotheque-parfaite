@@ -1,74 +1,38 @@
 package com.bibliotheque.model;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 public class Emprunt {
-
     private int id;
-    private LocalDate dateEmprunt;
-    private LocalDate dateRetourPrevue;
-    private LocalDate dateRetourEffective;
-    private Livre livre;
-    private Membre membre;
-
-    // Constructeur vide
+    private Date dateEmprunt;          
+    private Date dateRetourPrevue;     
+    private Date dateRetourReelle;
+    private Livre livre;               
+    private Membre membre;            
+    private boolean retourne;
+    
+    // Constructeur
     public Emprunt() {}
-
-    // Constructeur avec paramètres
-    public Emprunt(int id, LocalDate dateEmprunt, LocalDate dateRetourPrevue, Livre livre, Membre membre) {
-        this.id = id;
-        this.dateEmprunt = dateEmprunt;
-        this.dateRetourPrevue = dateRetourPrevue;
-        this.livre = livre;
-        this.membre = membre;
-    }
-
+    
     // Getters & Setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public LocalDate getDateEmprunt() {
-        return dateEmprunt;
-    }
-
-    public void setDateEmprunt(LocalDate dateEmprunt) {
-        this.dateEmprunt = dateEmprunt;
-    }
-
-    public LocalDate getDateRetourPrevue() {
-        return dateRetourPrevue;
-    }
-
-    public void setDateRetourPrevue(LocalDate dateRetourPrevue) {
-        this.dateRetourPrevue = dateRetourPrevue;
-    }
-
-    public LocalDate getDateRetourEffective() {
-        return dateRetourEffective;
-    }
-
-    public void setDateRetourEffective(LocalDate dateRetourEffective) {
-        this.dateRetourEffective = dateRetourEffective;
-    }
-
-    public Livre getLivre() {
-        return livre;
-    }
-
-    public void setLivre(Livre livre) {
-        this.livre = livre;
-    }
-
-    public Membre getMembre() {
-        return membre;
-    }
-
-    public void setMembre(Membre membre) {
-        this.membre = membre;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    
+    public Date getDateEmprunt() { return dateEmprunt; }
+    public void setDateEmprunt(Date dateEmprunt) { this.dateEmprunt = dateEmprunt; }
+    
+    public Date getDateRetourPrevue() { return dateRetourPrevue; }
+    public void setDateRetourPrevue(Date dateRetourPrevue) { this.dateRetourPrevue = dateRetourPrevue; }
+    
+    public Date getDateRetourReelle() { return dateRetourReelle; }
+    public void setDateRetourReelle(Date dateRetourReelle) { this.dateRetourReelle = dateRetourReelle; }
+    
+    public Livre getLivre() { return livre; }
+    public void setLivre(Livre livre) { this.livre = livre; }
+    
+    public Membre getMembre() { return membre; }
+    public void setMembre(Membre membre) { this.membre = membre; }
+    
+    public boolean isRetourne() { return retourne; }
+    public void setRetourne(boolean retourne) { this.retourne = retourne; }
 }
