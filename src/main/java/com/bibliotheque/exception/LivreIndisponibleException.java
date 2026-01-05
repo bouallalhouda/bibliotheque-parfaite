@@ -1,4 +1,4 @@
-// Exception limite emprunt - pour signaler limite de 3 emprunts en cours
+
 package com.bibliotheque.exception;
 
 public class LimiteEmpruntDepasseeException extends Exception {
