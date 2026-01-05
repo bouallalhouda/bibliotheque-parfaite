@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 
-<TabPane xmlns="http://javafx.com/javafx"
-         xmlns:fx="http://javafx.com/fxml"
-         fx:controller="com.bibliotheque.controller.MainController">
-    
-    <Tab text="Livres">
-        <fx:include source="LivreView.fxml" />
-    </Tab>
-    
-    <Tab text="Membres">
-        <fx:include source="MembreView.fxml" />
-    </Tab>
-    
-    <Tab text="Emprunts">
-        <fx:include source="EmpruntView.fxml" />
-    </Tab>
-    
-</TabPane>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bibliotheque.controller.MainController">
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab text="Livres">
+                    <fx:include source="LivreView.fxml" />
+                </Tab>
+                <Tab text="Membres">
+                    <fx:include source="MembreView.fxml" />
+                </Tab>
+                <Tab text="Emprunts">
+                    <fx:include source="EmpruntView.fxml" />
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+</BorderPane>
