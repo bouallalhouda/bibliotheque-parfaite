@@ -8,5 +8,5 @@ public interface DAO<T> {
     List<T> findAll();
     void save(T t);
     void update(T t);
-    boolean delete(int id);
+    void delete(int id);
 }
