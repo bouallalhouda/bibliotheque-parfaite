@@ -7,7 +7,7 @@ import com.bibliotheque.model.Emprunt;
 import com.bibliotheque.model.Livre;
 import com.bibliotheque.model.Membre;
 import com.bibliotheque.util.DatabaseConnection;
-import com.bibliotheque.dao.impl.LivreDAOImpl;   // Pour new LivreDAOImpl()
+import com.bibliotheque.dao.impl.LivreDAOImpl;   
 import com.bibliotheque.dao.MembreDAOImpl;
 
 import java.sql.*;
@@ -26,9 +26,7 @@ public class EmpruntDAOImpl implements EmpruntDAO {
         this.membreDAO = new MembreDAOImpl();
     }
 
-    /**
-     * Mappe un ResultSet à un objet Emprunt
-     */
+ 
     private Emprunt mapResultSetToEmprunt(ResultSet rs) throws SQLException {
         Emprunt emprunt = new Emprunt();
         emprunt.setId(rs.getInt("id"));
@@ -230,3 +228,4 @@ public class EmpruntDAOImpl implements EmpruntDAO {
         return 0;
     }
 }
+
